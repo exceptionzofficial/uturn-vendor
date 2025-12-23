@@ -1,205 +1,76 @@
 import React, { useEffect, useRef } from 'react';
-import {
-    View,
-    Text,
-    StyleSheet,
-    Animated,
-    Dimensions,
-    StatusBar,
-    Image,
-} from 'react-native';
-import LinearGradient from 'react-native-linear-gradient';
-import { colors, typography } from '../../theme/theme';
-
-const { width, height } = Dimensions.get('window');
+import { View, Text, StyleSheet, Animated, StatusBar } from 'react-native';
+import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
+import { colors, typography, spacing } from '../../theme/theme';
 
 const SplashScreen = ({ navigation }) => {
-    const logoScale = useRef(new Animated.Value(0.3)).current;
-    const logoOpacity = useRef(new Animated.Value(0)).current;
-    const taglineOpacity = useRef(new Animated.Value(0)).current;
-    const taglineTranslate = useRef(new Animated.Value(20)).current;
+    const fadeAnim = useRef(new Animated.Value(0)).current;
+    const scaleAnim = useRef(new Animated.Value(0.5)).current;
+    const slideAnim = useRef(new Animated.Value(50)).current;
 
     useEffect(() => {
-        // Logo animation
         Animated.parallel([
-            Animated.spring(logoScale, {
-                toValue: 1,
-                tension: 10,
-                friction: 3,
-                useNativeDriver: true,
-            }),
-            Animated.timing(logoOpacity, {
-                toValue: 1,
-                duration: 800,
-                useNativeDriver: true,
-            }),
+            Animated.timing(fadeAnim, { toValue: 1, duration: 800, useNativeDriver: true }),
+            Animated.spring(scaleAnim, { toValue: 1, friction: 4, useNativeDriver: true }),
+            Animated.timing(slideAnim, { toValue: 0, duration: 600, useNativeDriver: true }),
         ]).start();
 
-        // Tagline animation (delayed)
-        setTimeout(() => {
-            Animated.parallel([
-                Animated.timing(taglineOpacity, {
-                    toValue: 1,
-                    duration: 600,
-                    useNativeDriver: true,
-                }),
-                Animated.spring(taglineTranslate, {
-                    toValue: 0,
-                    tension: 50,
-                    friction: 8,
-                    useNativeDriver: true,
-                }),
-            ]).start();
-        }, 600);
-
-        // Navigate to Login after 2.5 seconds
-        const timer = setTimeout(() => {
-            navigation.replace('Login');
-        }, 2500);
-
-        return () => clearTimeout(timer);
-    }, [navigation]);
+        setTimeout(() => navigation.replace('Login'), 2500);
+    }, []);
 
     return (
-        <LinearGradient
-            colors={[colors.primary, colors.secondary]}
-            start={{ x: 0, y: 0 }}
-            end={{ x: 1, y: 1 }}
-            style={styles.container}>
-            <StatusBar translucent backgroundColor="transparent" barStyle="dark-content" />
+        <View style={styles.container}>
+            <StatusBar barStyle="dark-content" backgroundColor={colors.primary} />
 
-            {/* Decorative circles */}
-            <View style={styles.circle1} />
-            <View style={styles.circle2} />
-            <View style={styles.circle3} />
-
-            {/* Logo */}
-            <Animated.View
-                style={[
-                    styles.logoContainer,
-                    {
-                        opacity: logoOpacity,
-                        transform: [{ scale: logoScale }],
-                    },
-                ]}>
-                <View style={styles.logoBackground}>
-                    <Image
-                        source={require('../../assets/uturn.png')}
-                        style={styles.logo}
-                        resizeMode="contain"
-                    />
+            <Animated.View style={[styles.logoContainer, { opacity: fadeAnim, transform: [{ scale: scaleAnim }] }]}>
+                <View style={styles.logoCircle}>
+                    <Icon name="car-connected" size={60} color={colors.primary} />
                 </View>
             </Animated.View>
 
-            {/* App Name */}
-            <Animated.Text
-                style={[
-                    styles.appName,
-                    {
-                        opacity: logoOpacity,
-                        transform: [{ scale: logoScale }],
-                    },
-                ]}>
-                UTurn
-            </Animated.Text>
+            <Animated.View style={[styles.textContainer, { opacity: fadeAnim, transform: [{ translateY: slideAnim }] }]}>
+                <Text style={styles.appName}>UTurn</Text>
+                <Text style={styles.tagline}>Vendor Partner</Text>
+            </Animated.View>
 
-            {/* Tagline */}
-            <Animated.Text
-                style={[
-                    styles.tagline,
-                    {
-                        opacity: taglineOpacity,
-                        transform: [{ translateY: taglineTranslate }],
-                    },
-                ]}>
-                Your Trip Partner
-            </Animated.Text>
+            <Animated.View style={[styles.features, { opacity: fadeAnim }]}>
+                <View style={styles.featureItem}>
+                    <View style={[styles.featureIcon, { backgroundColor: colors.success + '20' }]}>
+                        <Icon name="check-circle" size={20} color={colors.success} />
+                    </View>
+                    <Text style={styles.featureText}>Easy Booking</Text>
+                </View>
+                <View style={styles.featureItem}>
+                    <View style={[styles.featureIcon, { backgroundColor: colors.info + '20' }]}>
+                        <Icon name="chart-line" size={20} color={colors.info} />
+                    </View>
+                    <Text style={styles.featureText}>Track Earnings</Text>
+                </View>
+                <View style={styles.featureItem}>
+                    <View style={[styles.featureIcon, { backgroundColor: colors.accent + '20' }]}>
+                        <Icon name="shield-check" size={20} color={colors.accent} />
+                    </View>
+                    <Text style={styles.featureText}>Safe & Secure</Text>
+                </View>
+            </Animated.View>
 
-            {/* Bottom text */}
-            <View style={styles.bottomContainer}>
-                <Text style={styles.vendorText}>Vendor App</Text>
-            </View>
-        </LinearGradient>
+            <Text style={styles.copyright}>© 2024 UTurn Technologies</Text>
+        </View>
     );
 };
 
 const styles = StyleSheet.create({
-    container: {
-        flex: 1,
-        justifyContent: 'center',
-        alignItems: 'center',
-    },
-    circle1: {
-        position: 'absolute',
-        width: 300,
-        height: 300,
-        borderRadius: 150,
-        backgroundColor: 'rgba(255,255,255,0.1)',
-        top: -100,
-        right: -100,
-    },
-    circle2: {
-        position: 'absolute',
-        width: 200,
-        height: 200,
-        borderRadius: 100,
-        backgroundColor: 'rgba(255,255,255,0.08)',
-        bottom: 100,
-        left: -80,
-    },
-    circle3: {
-        position: 'absolute',
-        width: 150,
-        height: 150,
-        borderRadius: 75,
-        backgroundColor: 'rgba(255,255,255,0.05)',
-        top: height * 0.3,
-        right: -50,
-    },
-    logoContainer: {
-        marginBottom: 20,
-    },
-    logoBackground: {
-        width: 140,
-        height: 140,
-        borderRadius: 70,
-        backgroundColor: colors.background,
-        justifyContent: 'center',
-        alignItems: 'center',
-        shadowColor: '#000',
-        shadowOffset: { width: 0, height: 10 },
-        shadowOpacity: 0.3,
-        shadowRadius: 20,
-        elevation: 15,
-    },
-    logo: {
-        width: 100,
-        height: 100,
-    },
-    appName: {
-        fontSize: 48,
-        fontWeight: '800',
-        color: colors.textOnPrimary,
-        letterSpacing: 2,
-        marginBottom: 8,
-    },
-    tagline: {
-        ...typography.body,
-        color: colors.textOnPrimary,
-        opacity: 0.9,
-        letterSpacing: 1,
-    },
-    bottomContainer: {
-        position: 'absolute',
-        bottom: 60,
-    },
-    vendorText: {
-        ...typography.caption,
-        color: colors.textOnPrimary,
-        opacity: 0.7,
-        letterSpacing: 3,
-        textTransform: 'uppercase',
-    },
+    container: { flex: 1, backgroundColor: colors.primary, justifyContent: 'center', alignItems: 'center', padding: spacing.lg },
+    logoContainer: { marginBottom: spacing.lg },
+    logoCircle: { width: 120, height: 120, borderRadius: 60, backgroundColor: colors.surface, justifyContent: 'center', alignItems: 'center', shadowColor: '#000', shadowOffset: { width: 0, height: 8 }, shadowOpacity: 0.15, shadowRadius: 16, elevation: 10 },
+    textContainer: { alignItems: 'center', marginBottom: spacing.xxl },
+    appName: { fontSize: 42, fontWeight: '800', color: colors.headerText },
+    tagline: { ...typography.h3, color: colors.headerText, opacity: 0.8 },
+    features: { flexDirection: 'row', marginBottom: spacing.xxl },
+    featureItem: { alignItems: 'center', marginHorizontal: spacing.md },
+    featureIcon: { width: 44, height: 44, borderRadius: 22, justifyContent: 'center', alignItems: 'center', marginBottom: spacing.xs },
+    featureText: { ...typography.caption, color: colors.headerText, fontWeight: '600' },
+    copyright: { position: 'absolute', bottom: spacing.xl, ...typography.caption, color: colors.headerText, opacity: 0.6 },
 });
 
 export default SplashScreen;

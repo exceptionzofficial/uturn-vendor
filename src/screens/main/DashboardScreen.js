@@ -1,55 +1,19 @@
 import React, { useState } from 'react';
-import {
-    View,
-    Text,
-    StyleSheet,
-    ScrollView,
-    TouchableOpacity,
-    StatusBar,
-    RefreshControl,
-    Image,
-} from 'react-native';
+import { View, Text, StyleSheet, ScrollView, TouchableOpacity, StatusBar, RefreshControl } from 'react-native';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
-import LinearGradient from 'react-native-linear-gradient';
+import { useNavigation } from '@react-navigation/native';
 import StatsCard from '../../components/StatsCard';
 import TripCard from '../../components/TripCard';
 import { colors, spacing, typography, shadows, borderRadius } from '../../theme/theme';
 
 const MOCK_RECENT_TRIPS = [
-    {
-        tripId: 'UT2024001',
-        pickupLocation: 'Chennai Airport',
-        dropLocation: 'T Nagar, Chennai',
-        pickupDate: '16 Dec 2024',
-        pickupTime: '10:30 AM',
-        vehicleType: 'Sedan',
-        amount: '850',
-        status: 'completed',
-        driverName: 'Rajesh Kumar',
-    },
-    {
-        tripId: 'UT2024002',
-        pickupLocation: 'Anna Nagar, Chennai',
-        dropLocation: 'Coimbatore Railway Station',
-        pickupDate: '17 Dec 2024',
-        pickupTime: '06:00 AM',
-        vehicleType: 'SUV',
-        amount: '4500',
-        status: 'published',
-    },
-    {
-        tripId: 'UT2024003',
-        pickupLocation: 'Velachery, Chennai',
-        dropLocation: 'ECR Beach Resort',
-        pickupDate: '18 Dec 2024',
-        pickupTime: '09:00 AM',
-        vehicleType: 'Mini',
-        amount: '650',
-        status: 'saved',
-    },
+    { tripId: 'UT2024001', pickupLocation: 'Chennai Airport', dropLocation: 'T Nagar, Chennai', pickupDate: '20 Dec 2024', pickupTime: '10:30 AM', vehicleType: 'Sedan', amount: '850', status: 'completed', driverName: 'Rajesh Kumar' },
+    { tripId: 'UT2024002', pickupLocation: 'Anna Nagar, Chennai', dropLocation: 'Coimbatore Railway Station', pickupDate: '21 Dec 2024', pickupTime: '06:00 AM', vehicleType: 'SUV', amount: '4500', status: 'published' },
+    { tripId: 'UT2024003', pickupLocation: 'Velachery, Chennai', dropLocation: 'ECR Beach Resort', pickupDate: '22 Dec 2024', pickupTime: '09:00 AM', vehicleType: 'Mini', amount: '650', status: 'saved' },
 ];
 
-const DashboardScreen = ({ navigation }) => {
+const DashboardScreen = () => {
+    const navigation = useNavigation();
     const [refreshing, setRefreshing] = useState(false);
 
     const onRefresh = () => {
@@ -57,34 +21,50 @@ const DashboardScreen = ({ navigation }) => {
         setTimeout(() => setRefreshing(false), 1500);
     };
 
+    const openDrawer = () => navigation.openDrawer();
+
     return (
         <View style={styles.container}>
-            <StatusBar barStyle="dark-content" backgroundColor={colors.background} />
+            <StatusBar barStyle="dark-content" backgroundColor={colors.primary} />
 
-            {/* Header */}
-            <View style={styles.header}>
-                <View style={styles.headerLeft}>
-                    <View style={styles.avatarContainer}>
-                        <Icon name="account" size={28} color={colors.primary} />
-                    </View>
-                    <View style={styles.headerText}>
+            {/* Curved Yellow Header */}
+            <View style={styles.curvedHeader}>
+                <View style={styles.headerTop}>
+                    <TouchableOpacity onPress={openDrawer} style={styles.menuButton}>
+                        <Icon name="menu" size={26} color={colors.headerText} />
+                    </TouchableOpacity>
+                    <View style={styles.headerCenter}>
                         <Text style={styles.greeting}>Good Morning 👋</Text>
                         <Text style={styles.businessName}>ABC Travels</Text>
                     </View>
+                    <View style={styles.headerRight}>
+                        <TouchableOpacity style={styles.walletButton} onPress={() => navigation.navigate('Wallet')}>
+                            <Icon name="wallet" size={18} color={colors.success} />
+                            <Text style={styles.walletAmount}>₹2.5K</Text>
+                        </TouchableOpacity>
+                        <TouchableOpacity style={styles.notificationButton}>
+                            <Icon name="bell-outline" size={22} color={colors.headerText} />
+                            <View style={styles.notificationBadge} />
+                        </TouchableOpacity>
+                    </View>
                 </View>
-                <View style={styles.headerRight}>
-                    <TouchableOpacity
-                        style={styles.walletButton}
-                        onPress={() => navigation.navigate('Wallet')}>
-                        <Icon name="wallet" size={22} color={colors.success} />
-                        <Text style={styles.walletAmount}>₹2.5K</Text>
-                    </TouchableOpacity>
-                    <TouchableOpacity
-                        style={styles.notificationButton}
-                        onPress={() => navigation.navigate('Notifications')}>
-                        <Icon name="bell-outline" size={24} color={colors.text} />
-                        <View style={styles.notificationBadge} />
-                    </TouchableOpacity>
+
+                {/* Balance Card inside header */}
+                <View style={styles.balanceCard}>
+                    <View style={styles.balanceInfo}>
+                        <Text style={styles.balanceLabel}>Available Balance</Text>
+                        <Text style={styles.balanceAmount}>₹45,200</Text>
+                    </View>
+                    <View style={styles.balanceActions}>
+                        <TouchableOpacity style={styles.balanceActionBtn} onPress={() => navigation.navigate('Wallet')}>
+                            <Icon name="plus" size={18} color={colors.textOnDark} />
+                            <Text style={styles.balanceActionText}>Top Up</Text>
+                        </TouchableOpacity>
+                        <TouchableOpacity style={styles.balanceActionBtn} onPress={() => navigation.navigate('TripHistory')}>
+                            <Icon name="history" size={18} color={colors.textOnDark} />
+                            <Text style={styles.balanceActionText}>History</Text>
+                        </TouchableOpacity>
+                    </View>
                 </View>
             </View>
 
@@ -92,109 +72,48 @@ const DashboardScreen = ({ navigation }) => {
                 style={styles.scrollView}
                 contentContainerStyle={styles.scrollContent}
                 showsVerticalScrollIndicator={false}
-                refreshControl={
-                    <RefreshControl
-                        refreshing={refreshing}
-                        onRefresh={onRefresh}
-                        colors={[colors.primary]}
-                    />
-                }>
+                refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} colors={[colors.primary]} />}>
 
-                {/* Subscription Banner */}
-                <TouchableOpacity
-                    activeOpacity={0.9}
-                    onPress={() => navigation.navigate('Subscription')}>
-                    <LinearGradient
-                        colors={[colors.primary, colors.secondary]}
-                        start={{ x: 0, y: 0 }}
-                        end={{ x: 1, y: 0 }}
-                        style={styles.subscriptionBanner}>
-                        <View style={styles.subscriptionContent}>
-                            <Icon name="crown" size={24} color={colors.textOnPrimary} />
-                            <View style={styles.subscriptionText}>
-                                <Text style={styles.subscriptionTitle}>Pro Plan Active</Text>
-                                <Text style={styles.subscriptionSubtitle}>185/200 trips remaining</Text>
-                            </View>
-                        </View>
-                        <Icon name="chevron-right" size={24} color={colors.textOnPrimary} />
-                    </LinearGradient>
-                </TouchableOpacity>
-
-                {/* Stats Cards */}
-                <View style={styles.statsContainer}>
-                    <StatsCard
-                        title="Today's Bookings"
-                        value="12"
-                        icon="calendar-check"
-                        variant="primary"
-                        style={styles.statsCard}
-                    />
-                    <StatsCard
-                        title="Active Trips"
-                        value="3"
-                        icon="car-connected"
-                        variant="success"
-                        style={styles.statsCard}
-                    />
-                </View>
-                <View style={styles.statsContainer}>
-                    <StatsCard
-                        title="This Month"
-                        value="₹45.2K"
-                        subtitle="Revenue"
-                        icon="cash-multiple"
-                        variant="secondary"
-                        style={styles.statsCard}
-                    />
-                    <StatsCard
-                        title="Total Trips"
-                        value="156"
-                        subtitle="This month"
-                        icon="road-variant"
-                        variant="primary"
-                        style={styles.statsCard}
-                    />
-                </View>
-
-                {/* Quick Actions */}
+                {/* Quick Actions Grid */}
                 <View style={styles.quickActionsContainer}>
                     <Text style={styles.sectionTitle}>Quick Actions</Text>
-                    <View style={styles.quickActions}>
-                        <TouchableOpacity
-                            style={styles.quickActionButton}
-                            onPress={() => navigation.navigate('AddTrip')}>
-                            <View style={[styles.quickActionIcon, { backgroundColor: colors.primary + '20' }]}>
-                                <Icon name="plus-circle" size={28} color={colors.primary} />
-                            </View>
-                            <Text style={styles.quickActionText}>Book Trip</Text>
-                        </TouchableOpacity>
+                    <View style={styles.quickActionsGrid}>
+                        {[
+                            { icon: 'plus-circle', label: 'Book Trip', route: 'AddTrip', color: colors.success },
+                            { icon: 'content-save', label: 'Saved', route: 'SavedTrips', color: colors.info },
+                            { icon: 'chart-pie', label: 'Budget', route: 'BudgetTracker', color: colors.accent },
+                            { icon: 'hand-coin', label: 'Loan', route: 'Loan', color: colors.accentGreen },
+                            { icon: 'car', label: 'Active', route: 'ActiveTrips', color: colors.accentBlue },
+                            { icon: 'gift', label: 'Refer', route: 'Referral', color: colors.accentRed },
+                            { icon: 'crown', label: 'Plans', route: 'Subscription', color: colors.primary },
+                            { icon: 'dots-horizontal', label: 'More', route: 'Profile', color: colors.textMuted },
+                        ].map((item, index) => (
+                            <TouchableOpacity key={index} style={styles.quickActionItem} onPress={() => navigation.navigate(item.route)}>
+                                <View style={[styles.quickActionIcon, { backgroundColor: item.color + '15' }]}>
+                                    <Icon name={item.icon} size={24} color={item.color} />
+                                </View>
+                                <Text style={styles.quickActionLabel}>{item.label}</Text>
+                            </TouchableOpacity>
+                        ))}
+                    </View>
+                </View>
 
-                        <TouchableOpacity
-                            style={styles.quickActionButton}
-                            onPress={() => navigation.navigate('SavedTrips')}>
-                            <View style={[styles.quickActionIcon, { backgroundColor: colors.saved + '20' }]}>
-                                <Icon name="content-save" size={28} color={colors.saved} />
-                            </View>
-                            <Text style={styles.quickActionText}>Saved</Text>
-                        </TouchableOpacity>
-
-                        <TouchableOpacity
-                            style={styles.quickActionButton}
-                            onPress={() => navigation.navigate('ActiveTrips')}>
-                            <View style={[styles.quickActionIcon, { backgroundColor: colors.success + '20' }]}>
-                                <Icon name="car" size={28} color={colors.success} />
-                            </View>
-                            <Text style={styles.quickActionText}>Active</Text>
-                        </TouchableOpacity>
-
-                        <TouchableOpacity
-                            style={styles.quickActionButton}
-                            onPress={() => navigation.navigate('Referral')}>
-                            <View style={[styles.quickActionIcon, { backgroundColor: colors.secondary + '20' }]}>
-                                <Icon name="gift" size={28} color={colors.secondary} />
-                            </View>
-                            <Text style={styles.quickActionText}>Refer</Text>
-                        </TouchableOpacity>
+                {/* Stats Row */}
+                <View style={styles.statsRow}>
+                    <View style={[styles.statCard, { backgroundColor: colors.success }]}>
+                        <Icon name="calendar-check" size={22} color={colors.textOnDark} />
+                        <Text style={styles.statValue}>12</Text>
+                        <Text style={styles.statLabel}>Today</Text>
+                    </View>
+                    <View style={[styles.statCard, { backgroundColor: colors.info }]}>
+                        <Icon name="car-connected" size={22} color={colors.textOnDark} />
+                        <Text style={styles.statValue}>3</Text>
+                        <Text style={styles.statLabel}>Active</Text>
+                    </View>
+                    <View style={[styles.statCard, { backgroundColor: colors.accent }]}>
+                        <Icon name="road-variant" size={22} color={colors.textOnDark} />
+                        <Text style={styles.statValue}>156</Text>
+                        <Text style={styles.statLabel}>Month</Text>
                     </View>
                 </View>
 
@@ -213,7 +132,6 @@ const DashboardScreen = ({ navigation }) => {
                             {...trip}
                             onPress={() => navigation.navigate('TripDetails', { tripId: trip.tripId })}
                             onEditPress={() => navigation.navigate('AddTrip', { tripId: trip.tripId })}
-                            onPublishPress={() => console.log('Publish', trip.tripId)}
                         />
                     ))}
                 </View>
@@ -223,161 +141,40 @@ const DashboardScreen = ({ navigation }) => {
 };
 
 const styles = StyleSheet.create({
-    container: {
-        flex: 1,
-        backgroundColor: colors.surface,
-    },
-    header: {
-        flexDirection: 'row',
-        justifyContent: 'space-between',
-        alignItems: 'center',
-        padding: spacing.lg,
-        paddingTop: spacing.xl,
-        backgroundColor: colors.background,
-    },
-    headerLeft: {
-        flexDirection: 'row',
-        alignItems: 'center',
-    },
-    avatarContainer: {
-        width: 50,
-        height: 50,
-        borderRadius: 25,
-        backgroundColor: colors.primary + '20',
-        justifyContent: 'center',
-        alignItems: 'center',
-    },
-    headerText: {
-        marginLeft: spacing.sm,
-    },
-    greeting: {
-        ...typography.caption,
-        color: colors.textMuted,
-    },
-    businessName: {
-        ...typography.h3,
-        color: colors.text,
-    },
-    headerRight: {
-        flexDirection: 'row',
-        alignItems: 'center',
-    },
-    walletButton: {
-        flexDirection: 'row',
-        alignItems: 'center',
-        backgroundColor: colors.success + '15',
-        paddingHorizontal: spacing.sm,
-        paddingVertical: spacing.xs,
-        borderRadius: borderRadius.full,
-        marginRight: spacing.sm,
-    },
-    walletAmount: {
-        ...typography.caption,
-        fontWeight: '700',
-        color: colors.success,
-        marginLeft: 4,
-    },
-    notificationButton: {
-        width: 44,
-        height: 44,
-        borderRadius: 22,
-        backgroundColor: colors.surface,
-        justifyContent: 'center',
-        alignItems: 'center',
-    },
-    notificationBadge: {
-        position: 'absolute',
-        top: 10,
-        right: 10,
-        width: 10,
-        height: 10,
-        borderRadius: 5,
-        backgroundColor: colors.secondary,
-    },
-    scrollView: {
-        flex: 1,
-    },
-    scrollContent: {
-        padding: spacing.lg,
-        paddingBottom: spacing.xxl,
-    },
-    subscriptionBanner: {
-        flexDirection: 'row',
-        justifyContent: 'space-between',
-        alignItems: 'center',
-        padding: spacing.md,
-        borderRadius: borderRadius.lg,
-        marginBottom: spacing.lg,
-        ...shadows.md,
-    },
-    subscriptionContent: {
-        flexDirection: 'row',
-        alignItems: 'center',
-    },
-    subscriptionText: {
-        marginLeft: spacing.sm,
-    },
-    subscriptionTitle: {
-        ...typography.body,
-        fontWeight: '700',
-        color: colors.textOnPrimary,
-    },
-    subscriptionSubtitle: {
-        ...typography.caption,
-        color: colors.textOnPrimary,
-        opacity: 0.8,
-    },
-    statsContainer: {
-        flexDirection: 'row',
-        marginBottom: spacing.md,
-    },
-    statsCard: {
-        marginRight: spacing.md,
-    },
-    quickActionsContainer: {
-        marginTop: spacing.md,
-        marginBottom: spacing.lg,
-    },
-    sectionTitle: {
-        ...typography.h3,
-        color: colors.text,
-        marginBottom: spacing.md,
-    },
-    quickActions: {
-        flexDirection: 'row',
-        justifyContent: 'space-between',
-    },
-    quickActionButton: {
-        alignItems: 'center',
-        width: '22%',
-    },
-    quickActionIcon: {
-        width: 56,
-        height: 56,
-        borderRadius: 16,
-        justifyContent: 'center',
-        alignItems: 'center',
-        marginBottom: spacing.xs,
-    },
-    quickActionText: {
-        ...typography.caption,
-        color: colors.text,
-        textAlign: 'center',
-    },
-    recentTripsContainer: {
-        marginTop: spacing.sm,
-    },
-    sectionHeader: {
-        flexDirection: 'row',
-        justifyContent: 'space-between',
-        alignItems: 'center',
-        marginBottom: spacing.md,
-    },
-    viewAll: {
-        ...typography.bodySmall,
-        color: colors.primary,
-        fontWeight: '600',
-    },
+    container: { flex: 1, backgroundColor: colors.background },
+    curvedHeader: { backgroundColor: colors.primary, paddingTop: spacing.xl, paddingBottom: spacing.xxl + 30, paddingHorizontal: spacing.lg, borderBottomLeftRadius: 30, borderBottomRightRadius: 30 },
+    headerTop: { flexDirection: 'row', alignItems: 'center', marginBottom: spacing.lg },
+    menuButton: { width: 44, height: 44, borderRadius: 12, backgroundColor: colors.surface + '30', justifyContent: 'center', alignItems: 'center' },
+    headerCenter: { flex: 1, marginLeft: spacing.md },
+    greeting: { ...typography.caption, color: colors.headerText, opacity: 0.8 },
+    businessName: { ...typography.h3, color: colors.headerText },
+    headerRight: { flexDirection: 'row', alignItems: 'center' },
+    walletButton: { flexDirection: 'row', alignItems: 'center', backgroundColor: colors.surface, paddingHorizontal: spacing.sm, paddingVertical: spacing.xs, borderRadius: borderRadius.full, marginRight: spacing.sm },
+    walletAmount: { ...typography.caption, fontWeight: '700', color: colors.success, marginLeft: 4 },
+    notificationButton: { width: 40, height: 40, borderRadius: 12, backgroundColor: colors.surface + '30', justifyContent: 'center', alignItems: 'center' },
+    notificationBadge: { position: 'absolute', top: 8, right: 8, width: 8, height: 8, borderRadius: 4, backgroundColor: colors.error },
+    balanceCard: { backgroundColor: colors.surface, borderRadius: borderRadius.xl, padding: spacing.lg, marginTop: spacing.sm, ...shadows.md },
+    balanceInfo: { marginBottom: spacing.md },
+    balanceLabel: { ...typography.caption, color: colors.textMuted },
+    balanceAmount: { ...typography.h1, color: colors.text },
+    balanceActions: { flexDirection: 'row' },
+    balanceActionBtn: { flex: 1, flexDirection: 'row', alignItems: 'center', justifyContent: 'center', backgroundColor: colors.accent, paddingVertical: spacing.sm, borderRadius: borderRadius.lg, marginRight: spacing.sm },
+    balanceActionText: { ...typography.caption, color: colors.textOnDark, fontWeight: '600', marginLeft: 4 },
+    scrollView: { flex: 1, marginTop: -30 },
+    scrollContent: { padding: spacing.lg, paddingTop: spacing.xl },
+    quickActionsContainer: { marginBottom: spacing.lg },
+    sectionTitle: { ...typography.h3, color: colors.text, marginBottom: spacing.md },
+    quickActionsGrid: { flexDirection: 'row', flexWrap: 'wrap', backgroundColor: colors.surface, borderRadius: borderRadius.xl, padding: spacing.md, ...shadows.sm },
+    quickActionItem: { width: '25%', alignItems: 'center', paddingVertical: spacing.md },
+    quickActionIcon: { width: 48, height: 48, borderRadius: 14, justifyContent: 'center', alignItems: 'center', marginBottom: spacing.xs },
+    quickActionLabel: { ...typography.caption, color: colors.text },
+    statsRow: { flexDirection: 'row', marginBottom: spacing.lg },
+    statCard: { flex: 1, borderRadius: borderRadius.xl, padding: spacing.md, marginRight: spacing.sm, alignItems: 'center', ...shadows.sm },
+    statValue: { ...typography.h2, color: colors.textOnDark, marginTop: spacing.xs },
+    statLabel: { ...typography.caption, color: colors.textOnDark, opacity: 0.9 },
+    recentTripsContainer: { marginBottom: spacing.xxl },
+    sectionHeader: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: spacing.md },
+    viewAll: { ...typography.bodySmall, color: colors.accent, fontWeight: '600' },
 });
 
 export default DashboardScreen;

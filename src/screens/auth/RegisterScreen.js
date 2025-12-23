@@ -1,287 +1,150 @@
 import React, { useState } from 'react';
-import {
-    View,
-    Text,
-    StyleSheet,
-    ScrollView,
-    TouchableOpacity,
-    StatusBar,
-    KeyboardAvoidingView,
-    Platform,
-} from 'react-native';
+import { View, Text, StyleSheet, ScrollView, TouchableOpacity, StatusBar, KeyboardAvoidingView, Platform } from 'react-native';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 import CustomButton from '../../components/CustomButton';
 import CustomInput from '../../components/CustomInput';
-import { colors, spacing, borderRadius, typography } from '../../theme/theme';
+import { colors, spacing, typography, borderRadius, shadows } from '../../theme/theme';
 
 const RegisterScreen = ({ navigation }) => {
     const [formData, setFormData] = useState({
-        businessName: '',
-        ownerName: '',
-        mobile: '',
-        email: '',
-        password: '',
-        confirmPassword: '',
+        businessName: '', ownerName: '', phone: '', email: '', password: '', confirmPassword: '',
     });
-    const [errors, setErrors] = useState({});
+    const [agreeToTerms, setAgreeToTerms] = useState(false);
     const [loading, setLoading] = useState(false);
-    const [agreeTerms, setAgreeTerms] = useState(false);
 
-    const updateField = (field, value) => {
-        setFormData(prev => ({ ...prev, [field]: value }));
-        if (errors[field]) {
-            setErrors(prev => ({ ...prev, [field]: null }));
-        }
-    };
+    const updateField = (field, value) => setFormData(prev => ({ ...prev, [field]: value }));
 
-    const validateForm = () => {
-        const newErrors = {};
-
-        if (!formData.businessName.trim()) {
-            newErrors.businessName = 'Business name is required';
-        }
-        if (!formData.ownerName.trim()) {
-            newErrors.ownerName = 'Owner name is required';
-        }
-        if (!formData.mobile.trim()) {
-            newErrors.mobile = 'Mobile number is required';
-        } else if (formData.mobile.length !== 10) {
-            newErrors.mobile = 'Enter valid 10-digit mobile number';
-        }
-        if (!formData.email.trim()) {
-            newErrors.email = 'Email is required';
-        } else if (!/\S+@\S+\.\S+/.test(formData.email)) {
-            newErrors.email = 'Enter valid email address';
-        }
-        if (!formData.password.trim()) {
-            newErrors.password = 'Password is required';
-        } else if (formData.password.length < 6) {
-            newErrors.password = 'Password must be at least 6 characters';
-        }
-        if (formData.password !== formData.confirmPassword) {
-            newErrors.confirmPassword = 'Passwords do not match';
-        }
-        if (!agreeTerms) {
-            newErrors.terms = 'You must agree to terms and conditions';
-        }
-
-        setErrors(newErrors);
-        return Object.keys(newErrors).length === 0;
-    };
-
-    const handleRegister = async () => {
-        if (!validateForm()) return;
-
+    const handleRegister = () => {
         setLoading(true);
-        // Simulate API call
         setTimeout(() => {
             setLoading(false);
-            navigation.navigate('OTP', { mobile: formData.mobile });
+            navigation.navigate('OTP', { phone: formData.phone });
         }, 1500);
     };
 
     return (
-        <KeyboardAvoidingView
-            style={styles.container}
-            behavior={Platform.OS === 'ios' ? 'padding' : 'height'}>
-            <StatusBar barStyle="dark-content" backgroundColor={colors.background} />
+        <View style={styles.container}>
+            <StatusBar barStyle="dark-content" backgroundColor={colors.primary} />
 
-            <ScrollView
-                contentContainerStyle={styles.scrollContent}
-                showsVerticalScrollIndicator={false}>
-
-                {/* Header */}
-                <View style={styles.header}>
-                    <TouchableOpacity
-                        style={styles.backButton}
-                        onPress={() => navigation.goBack()}>
-                        <Icon name="arrow-left" size={24} color={colors.text} />
-                    </TouchableOpacity>
-                    <Text style={styles.title}>Create Account</Text>
-                    <Text style={styles.subtitle}>Register as a vendor partner</Text>
+            {/* Curved Yellow Header */}
+            <View style={styles.curvedHeader}>
+                <TouchableOpacity style={styles.backButton} onPress={() => navigation.goBack()}>
+                    <Icon name="arrow-left" size={24} color={colors.headerText} />
+                </TouchableOpacity>
+                <View style={styles.headerContent}>
+                    <Text style={styles.headerTitle}>Create Account</Text>
+                    <Text style={styles.headerSubtitle}>Join UTurn as a Vendor Partner</Text>
                 </View>
+            </View>
 
-                {/* Form */}
-                <View style={styles.form}>
-                    <CustomInput
-                        label="Business Name"
-                        placeholder="Enter your business name"
-                        value={formData.businessName}
-                        onChangeText={(v) => updateField('businessName', v)}
-                        leftIcon="store"
-                        error={errors.businessName}
-                        required
-                    />
+            <KeyboardAvoidingView style={styles.keyboardView} behavior={Platform.OS === 'ios' ? 'padding' : undefined}>
+                <ScrollView contentContainerStyle={styles.scrollContent} showsVerticalScrollIndicator={false}>
+                    {/* Form Card */}
+                    <View style={styles.formCard}>
+                        <CustomInput
+                            label="Business Name"
+                            placeholder="Your travel agency name"
+                            value={formData.businessName}
+                            onChangeText={(v) => updateField('businessName', v)}
+                            leftIcon="domain"
+                            required
+                        />
+                        <CustomInput
+                            label="Owner Name"
+                            placeholder="Your full name"
+                            value={formData.ownerName}
+                            onChangeText={(v) => updateField('ownerName', v)}
+                            leftIcon="account"
+                            required
+                        />
+                        <CustomInput
+                            label="Phone Number"
+                            placeholder="Enter mobile number"
+                            value={formData.phone}
+                            onChangeText={(v) => updateField('phone', v)}
+                            keyboardType="phone-pad"
+                            leftIcon="phone"
+                            required
+                        />
+                        <CustomInput
+                            label="Email Address"
+                            placeholder="Enter email address"
+                            value={formData.email}
+                            onChangeText={(v) => updateField('email', v)}
+                            keyboardType="email-address"
+                            leftIcon="email"
+                        />
+                        <CustomInput
+                            label="Password"
+                            placeholder="Create a password"
+                            value={formData.password}
+                            onChangeText={(v) => updateField('password', v)}
+                            secureTextEntry
+                            leftIcon="lock"
+                            required
+                        />
+                        <CustomInput
+                            label="Confirm Password"
+                            placeholder="Confirm your password"
+                            value={formData.confirmPassword}
+                            onChangeText={(v) => updateField('confirmPassword', v)}
+                            secureTextEntry
+                            leftIcon="lock-check"
+                            required
+                        />
 
-                    <CustomInput
-                        label="Owner Name"
-                        placeholder="Enter owner's full name"
-                        value={formData.ownerName}
-                        onChangeText={(v) => updateField('ownerName', v)}
-                        leftIcon="account"
-                        error={errors.ownerName}
-                        required
-                    />
+                        {/* Terms Checkbox */}
+                        <TouchableOpacity style={styles.termsRow} onPress={() => setAgreeToTerms(!agreeToTerms)}>
+                            <View style={[styles.checkbox, agreeToTerms && styles.checkboxActive]}>
+                                {agreeToTerms && <Icon name="check" size={14} color={colors.textOnDark} />}
+                            </View>
+                            <Text style={styles.termsText}>
+                                I agree to the <Text style={styles.termsLink}>Terms & Conditions</Text> and <Text style={styles.termsLink}>Privacy Policy</Text>
+                            </Text>
+                        </TouchableOpacity>
 
-                    <CustomInput
-                        label="Mobile Number"
-                        placeholder="Enter 10-digit mobile number"
-                        value={formData.mobile}
-                        onChangeText={(v) => updateField('mobile', v)}
-                        keyboardType="phone-pad"
-                        leftIcon="phone"
-                        error={errors.mobile}
-                        required
-                    />
+                        <CustomButton
+                            title="Create Account"
+                            onPress={handleRegister}
+                            loading={loading}
+                            fullWidth
+                            disabled={!agreeToTerms}
+                            style={styles.registerButton}
+                        />
 
-                    <CustomInput
-                        label="Email Address"
-                        placeholder="Enter email address"
-                        value={formData.email}
-                        onChangeText={(v) => updateField('email', v)}
-                        keyboardType="email-address"
-                        leftIcon="email"
-                        error={errors.email}
-                        required
-                    />
-
-                    <CustomInput
-                        label="Password"
-                        placeholder="Create a password"
-                        value={formData.password}
-                        onChangeText={(v) => updateField('password', v)}
-                        secureTextEntry
-                        leftIcon="lock"
-                        error={errors.password}
-                        required
-                    />
-
-                    <CustomInput
-                        label="Confirm Password"
-                        placeholder="Confirm your password"
-                        value={formData.confirmPassword}
-                        onChangeText={(v) => updateField('confirmPassword', v)}
-                        secureTextEntry
-                        leftIcon="lock-check"
-                        error={errors.confirmPassword}
-                        required
-                    />
-
-                    {/* Terms Checkbox */}
-                    <TouchableOpacity
-                        style={styles.termsContainer}
-                        onPress={() => setAgreeTerms(!agreeTerms)}>
-                        <View style={[styles.checkbox, agreeTerms && styles.checkboxChecked]}>
-                            {agreeTerms && <Icon name="check" size={16} color={colors.textOnPrimary} />}
+                        {/* Login Link */}
+                        <View style={styles.loginSection}>
+                            <Text style={styles.loginText}>Already have an account? </Text>
+                            <TouchableOpacity onPress={() => navigation.navigate('Login')}>
+                                <Text style={styles.loginLink}>Login</Text>
+                            </TouchableOpacity>
                         </View>
-                        <Text style={styles.termsText}>
-                            I agree to the{' '}
-                            <Text style={styles.termsLink}>Terms & Conditions</Text> and{' '}
-                            <Text style={styles.termsLink}>Privacy Policy</Text>
-                        </Text>
-                    </TouchableOpacity>
-                    {errors.terms && <Text style={styles.errorText}>{errors.terms}</Text>}
-
-                    <CustomButton
-                        title="Register"
-                        onPress={handleRegister}
-                        loading={loading}
-                        fullWidth
-                        style={styles.registerButton}
-                    />
-                </View>
-
-                {/* Login Link */}
-                <View style={styles.loginContainer}>
-                    <Text style={styles.loginText}>Already have an account? </Text>
-                    <TouchableOpacity onPress={() => navigation.goBack()}>
-                        <Text style={styles.loginLink}>Login</Text>
-                    </TouchableOpacity>
-                </View>
-            </ScrollView>
-        </KeyboardAvoidingView>
+                    </View>
+                </ScrollView>
+            </KeyboardAvoidingView>
+        </View>
     );
 };
 
 const styles = StyleSheet.create({
-    container: {
-        flex: 1,
-        backgroundColor: colors.background,
-    },
-    scrollContent: {
-        flexGrow: 1,
-        padding: spacing.lg,
-    },
-    header: {
-        marginBottom: spacing.xl,
-        marginTop: spacing.lg,
-    },
-    backButton: {
-        marginBottom: spacing.lg,
-    },
-    title: {
-        ...typography.h1,
-        color: colors.text,
-        marginBottom: spacing.xs,
-    },
-    subtitle: {
-        ...typography.body,
-        color: colors.textLight,
-    },
-    form: {
-        marginBottom: spacing.lg,
-    },
-    termsContainer: {
-        flexDirection: 'row',
-        alignItems: 'flex-start',
-        marginBottom: spacing.md,
-        marginTop: spacing.sm,
-    },
-    checkbox: {
-        width: 22,
-        height: 22,
-        borderRadius: borderRadius.sm,
-        borderWidth: 2,
-        borderColor: colors.border,
-        marginRight: spacing.sm,
-        justifyContent: 'center',
-        alignItems: 'center',
-    },
-    checkboxChecked: {
-        backgroundColor: colors.primary,
-        borderColor: colors.primary,
-    },
-    termsText: {
-        ...typography.bodySmall,
-        color: colors.textLight,
-        flex: 1,
-    },
-    termsLink: {
-        color: colors.primary,
-        fontWeight: '600',
-    },
-    errorText: {
-        ...typography.caption,
-        color: colors.secondary,
-        marginBottom: spacing.md,
-    },
-    registerButton: {
-        marginTop: spacing.md,
-    },
-    loginContainer: {
-        flexDirection: 'row',
-        justifyContent: 'center',
-        marginBottom: spacing.xl,
-    },
-    loginText: {
-        ...typography.body,
-        color: colors.textLight,
-    },
-    loginLink: {
-        ...typography.body,
-        color: colors.primary,
-        fontWeight: '600',
-    },
+    container: { flex: 1, backgroundColor: colors.background },
+    curvedHeader: { backgroundColor: colors.primary, paddingTop: spacing.xxl, paddingBottom: spacing.xl, paddingHorizontal: spacing.lg, borderBottomLeftRadius: 40, borderBottomRightRadius: 40 },
+    backButton: { width: 40, height: 40, borderRadius: 12, backgroundColor: colors.surface + '30', justifyContent: 'center', alignItems: 'center', marginBottom: spacing.md },
+    headerContent: {},
+    headerTitle: { ...typography.h1, color: colors.headerText },
+    headerSubtitle: { ...typography.body, color: colors.headerText, opacity: 0.8 },
+    keyboardView: { flex: 1 },
+    scrollContent: { padding: spacing.lg },
+    formCard: { backgroundColor: colors.surface, borderRadius: borderRadius.xxl, padding: spacing.xl, ...shadows.md },
+    termsRow: { flexDirection: 'row', alignItems: 'flex-start', marginBottom: spacing.lg },
+    checkbox: { width: 22, height: 22, borderRadius: 6, borderWidth: 2, borderColor: colors.border, marginRight: spacing.sm, justifyContent: 'center', alignItems: 'center' },
+    checkboxActive: { backgroundColor: colors.success, borderColor: colors.success },
+    termsText: { flex: 1, ...typography.bodySmall, color: colors.textLight },
+    termsLink: { color: colors.accent, fontWeight: '600' },
+    registerButton: { marginBottom: spacing.lg },
+    loginSection: { flexDirection: 'row', justifyContent: 'center' },
+    loginText: { ...typography.body, color: colors.textMuted },
+    loginLink: { ...typography.body, color: colors.accent, fontWeight: '600' },
 });
 
 export default RegisterScreen;

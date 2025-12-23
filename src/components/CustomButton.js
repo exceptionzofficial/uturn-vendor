@@ -1,120 +1,30 @@
 import React from 'react';
-import {
-    TouchableOpacity,
-    Text,
-    StyleSheet,
-    ActivityIndicator,
-    View,
-} from 'react-native';
-import LinearGradient from 'react-native-linear-gradient';
-import { colors, borderRadius, typography, shadows } from '../theme/theme';
+import { TouchableOpacity, Text, StyleSheet, ActivityIndicator, View } from 'react-native';
+import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
+import { colors, spacing, typography, borderRadius } from '../theme/theme';
 
 const CustomButton = ({
-    title,
-    onPress,
-    variant = 'primary', // primary, secondary, success, outline, ghost
-    size = 'medium', // small, medium, large
-    loading = false,
-    disabled = false,
-    icon,
-    iconPosition = 'left',
-    fullWidth = false,
-    style,
-    textStyle,
+    title, onPress, variant = 'primary', size = 'medium', loading = false, disabled = false,
+    icon, iconPosition = 'left', fullWidth = false, style,
 }) => {
-    const getGradientColors = () => {
-        switch (variant) {
-            case 'primary':
-                return [colors.primary, colors.primaryDark];
-            case 'secondary':
-                return [colors.secondary, colors.secondaryDark];
-            case 'success':
-                return [colors.success, colors.successDark];
-            default:
-                return [colors.primary, colors.primaryDark];
-        }
+    const variants = {
+        primary: { bg: colors.primary, text: colors.textOnPrimary },
+        secondary: { bg: colors.accent, text: colors.textOnDark },
+        success: { bg: colors.success, text: colors.textOnDark },
+        error: { bg: colors.error, text: colors.textOnDark },
+        info: { bg: colors.info, text: colors.textOnDark },
+        outline: { bg: 'transparent', text: colors.primary, border: colors.primary },
+        ghost: { bg: 'transparent', text: colors.text },
     };
 
-    const getTextColor = () => {
-        switch (variant) {
-            case 'primary':
-                return colors.textOnPrimary;
-            case 'secondary':
-            case 'success':
-                return colors.textOnDark;
-            case 'outline':
-                return colors.primary;
-            case 'ghost':
-                return colors.text;
-            default:
-                return colors.textOnPrimary;
-        }
+    const sizes = {
+        small: { paddingVertical: spacing.sm, paddingHorizontal: spacing.md, fontSize: 14 },
+        medium: { paddingVertical: spacing.md, paddingHorizontal: spacing.lg, fontSize: 16 },
+        large: { paddingVertical: spacing.lg, paddingHorizontal: spacing.xl, fontSize: 18 },
     };
 
-    const getSizeStyles = () => {
-        switch (size) {
-            case 'small':
-                return { paddingVertical: 8, paddingHorizontal: 16, fontSize: 14 };
-            case 'large':
-                return { paddingVertical: 18, paddingHorizontal: 32, fontSize: 18 };
-            default:
-                return { paddingVertical: 14, paddingHorizontal: 24, fontSize: 16 };
-        }
-    };
-
-    const sizeStyles = getSizeStyles();
-    const isGradient = ['primary', 'secondary', 'success'].includes(variant);
-
-    const buttonContent = (
-        <View style={styles.content}>
-            {loading ? (
-                <ActivityIndicator color={getTextColor()} size="small" />
-            ) : (
-                <>
-                    {icon && iconPosition === 'left' && (
-                        <View style={styles.iconLeft}>{icon}</View>
-                    )}
-                    <Text
-                        style={[
-                            styles.text,
-                            { color: getTextColor(), fontSize: sizeStyles.fontSize },
-                            textStyle,
-                        ]}>
-                        {title}
-                    </Text>
-                    {icon && iconPosition === 'right' && (
-                        <View style={styles.iconRight}>{icon}</View>
-                    )}
-                </>
-            )}
-        </View>
-    );
-
-    if (isGradient) {
-        return (
-            <TouchableOpacity
-                onPress={onPress}
-                disabled={disabled || loading}
-                activeOpacity={0.8}
-                style={[fullWidth && styles.fullWidth, style]}>
-                <LinearGradient
-                    colors={getGradientColors()}
-                    start={{ x: 0, y: 0 }}
-                    end={{ x: 1, y: 0 }}
-                    style={[
-                        styles.button,
-                        {
-                            paddingVertical: sizeStyles.paddingVertical,
-                            paddingHorizontal: sizeStyles.paddingHorizontal,
-                        },
-                        disabled && styles.disabled,
-                        shadows.md,
-                    ]}>
-                    {buttonContent}
-                </LinearGradient>
-            </TouchableOpacity>
-        );
-    }
+    const config = variants[variant];
+    const sizeConfig = sizes[size];
 
     return (
         <TouchableOpacity
@@ -124,55 +34,39 @@ const CustomButton = ({
             style={[
                 styles.button,
                 {
-                    paddingVertical: sizeStyles.paddingVertical,
-                    paddingHorizontal: sizeStyles.paddingHorizontal,
+                    backgroundColor: config.bg,
+                    paddingVertical: sizeConfig.paddingVertical,
+                    paddingHorizontal: sizeConfig.paddingHorizontal,
+                    borderWidth: config.border ? 2 : 0,
+                    borderColor: config.border,
                 },
-                variant === 'outline' && styles.outline,
-                variant === 'ghost' && styles.ghost,
-                disabled && styles.disabled,
                 fullWidth && styles.fullWidth,
+                disabled && styles.disabled,
                 style,
             ]}>
-            {buttonContent}
+            <View style={styles.content}>
+                {loading ? (
+                    <ActivityIndicator color={config.text} size="small" />
+                ) : (
+                    <>
+                        {icon && iconPosition === 'left' && <Icon name={icon} size={sizeConfig.fontSize + 4} color={config.text} style={styles.iconLeft} />}
+                        <Text style={[styles.text, { color: config.text, fontSize: sizeConfig.fontSize }]}>{title}</Text>
+                        {icon && iconPosition === 'right' && <Icon name={icon} size={sizeConfig.fontSize + 4} color={config.text} style={styles.iconRight} />}
+                    </>
+                )}
+            </View>
         </TouchableOpacity>
     );
 };
 
 const styles = StyleSheet.create({
-    button: {
-        borderRadius: borderRadius.lg,
-        alignItems: 'center',
-        justifyContent: 'center',
-        flexDirection: 'row',
-    },
-    content: {
-        flexDirection: 'row',
-        alignItems: 'center',
-        justifyContent: 'center',
-    },
-    text: {
-        ...typography.button,
-    },
-    iconLeft: {
-        marginRight: 8,
-    },
-    iconRight: {
-        marginLeft: 8,
-    },
-    outline: {
-        backgroundColor: 'transparent',
-        borderWidth: 2,
-        borderColor: colors.primary,
-    },
-    ghost: {
-        backgroundColor: 'transparent',
-    },
-    disabled: {
-        opacity: 0.5,
-    },
-    fullWidth: {
-        width: '100%',
-    },
+    button: { borderRadius: borderRadius.lg, alignItems: 'center', justifyContent: 'center' },
+    content: { flexDirection: 'row', alignItems: 'center', justifyContent: 'center' },
+    text: { ...typography.button, textAlign: 'center' },
+    iconLeft: { marginRight: spacing.sm },
+    iconRight: { marginLeft: spacing.sm },
+    fullWidth: { width: '100%' },
+    disabled: { opacity: 0.5 },
 });
 
 export default CustomButton;

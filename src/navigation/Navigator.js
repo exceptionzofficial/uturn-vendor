@@ -2,8 +2,10 @@ import React from 'react';
 import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
+import { createDrawerNavigator } from '@react-navigation/drawer';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 import { colors } from '../theme/theme';
+import DrawerContent from '../components/DrawerContent';
 
 // Auth Screens
 import SplashScreen from '../screens/auth/SplashScreen';
@@ -25,8 +27,13 @@ import SavedTripsScreen from '../screens/trips/SavedTripsScreen';
 import ActiveTripsScreen from '../screens/trips/ActiveTripsScreen';
 import TripDetailsScreen from '../screens/trips/TripDetailsScreen';
 
+// Feature Screens
+import BudgetTrackerScreen from '../screens/features/BudgetTrackerScreen';
+import LoanScreen from '../screens/features/LoanScreen';
+
 const Stack = createNativeStackNavigator();
 const Tab = createBottomTabNavigator();
+const Drawer = createDrawerNavigator();
 
 // Bottom Tab Navigator
 const MainTabs = () => {
@@ -40,47 +47,43 @@ const MainTabs = () => {
                     height: 65,
                     paddingBottom: 10,
                     paddingTop: 5,
-                    backgroundColor: colors.background,
+                    backgroundColor: colors.surface,
                     borderTopWidth: 1,
                     borderTopColor: colors.border,
                 },
-                tabBarLabelStyle: {
-                    fontSize: 12,
-                    fontWeight: '600',
-                },
-                tabBarIcon: ({ focused, color, size }) => {
+                tabBarLabelStyle: { fontSize: 11, fontWeight: '600' },
+                tabBarIcon: ({ focused, color }) => {
                     let iconName;
                     switch (route.name) {
-                        case 'Dashboard':
-                            iconName = focused ? 'home' : 'home-outline';
-                            break;
-                        case 'AddTrip':
-                            iconName = 'plus-circle';
-                            break;
-                        case 'TripHistory':
-                            iconName = focused ? 'history' : 'history';
-                            break;
-                        case 'Profile':
-                            iconName = focused ? 'account' : 'account-outline';
-                            break;
-                        default:
-                            iconName = 'circle';
+                        case 'Dashboard': iconName = focused ? 'home' : 'home-outline'; break;
+                        case 'AddTrip': iconName = 'plus-circle'; break;
+                        case 'TripHistory': iconName = 'history'; break;
+                        case 'Profile': iconName = focused ? 'account' : 'account-outline'; break;
+                        default: iconName = 'circle';
                     }
-                    return <Icon name={iconName} size={route.name === 'AddTrip' ? 32 : 26} color={color} />;
+                    return <Icon name={iconName} size={route.name === 'AddTrip' ? 32 : 24} color={color} />;
                 },
             })}>
             <Tab.Screen name="Dashboard" component={DashboardScreen} options={{ tabBarLabel: 'Home' }} />
-            <Tab.Screen
-                name="AddTrip"
-                component={AddTripScreen}
-                options={{
-                    tabBarLabel: 'Add Trip',
-                    tabBarActiveTintColor: colors.secondary,
-                }}
-            />
+            <Tab.Screen name="AddTrip" component={AddTripScreen} options={{ tabBarLabel: 'Add Trip' }} />
             <Tab.Screen name="TripHistory" component={TripHistoryScreen} options={{ tabBarLabel: 'History' }} />
             <Tab.Screen name="Profile" component={ProfileScreen} />
         </Tab.Navigator>
+    );
+};
+
+// Drawer Navigator wrapping Tabs
+const DrawerNavigator = () => {
+    return (
+        <Drawer.Navigator
+            drawerContent={(props) => <DrawerContent {...props} />}
+            screenOptions={{
+                headerShown: false,
+                drawerType: 'front',
+                drawerStyle: { width: '80%' },
+            }}>
+            <Drawer.Screen name="MainTabs" component={MainTabs} />
+        </Drawer.Navigator>
     );
 };
 
@@ -96,8 +99,8 @@ const Navigator = () => {
                 <Stack.Screen name="OTP" component={OTPScreen} />
                 <Stack.Screen name="Subscription" component={SubscriptionScreen} />
 
-                {/* Main App */}
-                <Stack.Screen name="MainTabs" component={MainTabs} />
+                {/* Main App with Drawer */}
+                <Stack.Screen name="DrawerNav" component={DrawerNavigator} />
 
                 {/* Additional Screens */}
                 <Stack.Screen name="Referral" component={ReferralScreen} />
@@ -105,6 +108,8 @@ const Navigator = () => {
                 <Stack.Screen name="SavedTrips" component={SavedTripsScreen} />
                 <Stack.Screen name="ActiveTrips" component={ActiveTripsScreen} />
                 <Stack.Screen name="TripDetails" component={TripDetailsScreen} />
+                <Stack.Screen name="BudgetTracker" component={BudgetTrackerScreen} />
+                <Stack.Screen name="Loan" component={LoanScreen} />
             </Stack.Navigator>
         </NavigationContainer>
     );

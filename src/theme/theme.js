@@ -1,56 +1,69 @@
-// UTurn App Theme Configuration
-// Color Scheme: Yellow, Red, Green
+// UTurn Vendor App Theme Configuration
+// Primary: Yellow | Accents: Red, Green, Blue, Purple
+// NO GRADIENTS - Flat modern design
 
 export const colors = {
-    // Primary Colors
-    primary: '#FFD700',        // Golden Yellow - Main brand color
-    primaryDark: '#E6C200',    // Darker yellow for pressed states
-    primaryLight: '#FFF176',   // Lighter yellow for backgrounds
+    // Primary Colors - Yellow
+    primary: '#FFD700',        // Golden Yellow - Main brand
+    primaryDark: '#F5C400',
+    primaryLight: '#FFDF40',
 
     // Accent Colors
-    secondary: '#E53935',      // Red - CTAs, alerts
-    secondaryDark: '#C62828',  // Darker red
-    secondaryLight: '#EF5350', // Lighter red
+    accent: '#7B2CBF',         // Purple
+    accentBlue: '#2196F3',     // Blue
+    accentRed: '#E53935',      // Red
+    accentGreen: '#43A047',    // Green
 
-    // Success/Active Colors
-    success: '#43A047',        // Green - Success, online status
-    successDark: '#2E7D32',    // Darker green
-    successLight: '#66BB6A',   // Lighter green
+    // Success/Error/Warning
+    success: '#43A047',
+    error: '#E53935',
+    warning: '#FF9800',
+    info: '#2196F3',
 
     // Neutral Colors
-    background: '#FFFFFF',
-    backgroundDark: '#1A1A2E',
-    surface: '#F5F5F5',
-    surfaceDark: '#2A2A4A',
+    background: '#F8F9FE',
+    surface: '#FFFFFF',
+    surfaceLight: '#FAFAFA',
+
+    // Header (curved) - Yellow based
+    headerBg: '#FFD700',
+    headerText: '#1A1A2E',
 
     // Text Colors
-    text: '#333333',
-    textLight: '#666666',
-    textMuted: '#999999',
-    textOnPrimary: '#1A1A1A',
+    text: '#1A1A2E',
+    textLight: '#4A4A6A',
+    textMuted: '#8E8EA9',
+    textOnPrimary: '#1A1A2E',
     textOnDark: '#FFFFFF',
 
     // Border Colors
-    border: '#E0E0E0',
-    borderDark: '#404060',
+    border: '#E8E8F0',
+    borderLight: '#F0F0F5',
 
     // Status Colors
-    pending: '#FFA726',
-    cancelled: '#EF5350',
+    pending: '#FF9800',
+    cancelled: '#E53935',
     completed: '#43A047',
-    saved: '#42A5F5',
+    saved: '#2196F3',
+
+    // Card backgrounds
+    cardPurple: '#7B2CBF',
+    cardBlue: '#2196F3',
+    cardGreen: '#43A047',
+    cardRed: '#E53935',
 
     // Overlay
     overlay: 'rgba(0, 0, 0, 0.5)',
+    overlayLight: 'rgba(0, 0, 0, 0.3)',
 };
 
 export const spacing = {
     xs: 4,
     sm: 8,
     md: 16,
-    lg: 24,
-    xl: 32,
-    xxl: 48,
+    lg: 20,
+    xl: 24,
+    xxl: 32,
 };
 
 export const borderRadius = {
@@ -58,75 +71,24 @@ export const borderRadius = {
     md: 8,
     lg: 16,
     xl: 24,
+    xxl: 32,
     full: 9999,
 };
 
 export const typography = {
-    h1: {
-        fontSize: 28,
-        fontWeight: '700',
-        lineHeight: 36,
-    },
-    h2: {
-        fontSize: 24,
-        fontWeight: '700',
-        lineHeight: 32,
-    },
-    h3: {
-        fontSize: 20,
-        fontWeight: '600',
-        lineHeight: 28,
-    },
-    body: {
-        fontSize: 16,
-        fontWeight: '400',
-        lineHeight: 24,
-    },
-    bodySmall: {
-        fontSize: 14,
-        fontWeight: '400',
-        lineHeight: 20,
-    },
-    caption: {
-        fontSize: 12,
-        fontWeight: '400',
-        lineHeight: 16,
-    },
-    button: {
-        fontSize: 16,
-        fontWeight: '600',
-        lineHeight: 24,
-    },
+    h1: { fontSize: 32, fontWeight: '700', lineHeight: 40 },
+    h2: { fontSize: 24, fontWeight: '700', lineHeight: 32 },
+    h3: { fontSize: 20, fontWeight: '600', lineHeight: 28 },
+    body: { fontSize: 16, fontWeight: '400', lineHeight: 24 },
+    bodySmall: { fontSize: 14, fontWeight: '400', lineHeight: 20 },
+    caption: { fontSize: 12, fontWeight: '400', lineHeight: 16 },
+    button: { fontSize: 16, fontWeight: '600', lineHeight: 24 },
 };
 
 export const shadows = {
-    sm: {
-        shadowColor: '#000',
-        shadowOffset: { width: 0, height: 1 },
-        shadowOpacity: 0.1,
-        shadowRadius: 2,
-        elevation: 2,
-    },
-    md: {
-        shadowColor: '#000',
-        shadowOffset: { width: 0, height: 2 },
-        shadowOpacity: 0.15,
-        shadowRadius: 4,
-        elevation: 4,
-    },
-    lg: {
-        shadowColor: '#000',
-        shadowOffset: { width: 0, height: 4 },
-        shadowOpacity: 0.2,
-        shadowRadius: 8,
-        elevation: 8,
-    },
+    sm: { shadowColor: '#000', shadowOffset: { width: 0, height: 2 }, shadowOpacity: 0.05, shadowRadius: 4, elevation: 2 },
+    md: { shadowColor: '#000', shadowOffset: { width: 0, height: 4 }, shadowOpacity: 0.08, shadowRadius: 8, elevation: 4 },
+    lg: { shadowColor: '#000', shadowOffset: { width: 0, height: 8 }, shadowOpacity: 0.12, shadowRadius: 16, elevation: 8 },
 };
 
-export default {
-    colors,
-    spacing,
-    borderRadius,
-    typography,
-    shadows,
-};
+export default { colors, spacing, borderRadius, typography, shadows };
